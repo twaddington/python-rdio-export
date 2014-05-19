@@ -1,0 +1,2 @@
+git+ssh://git@github.com/rdio/rdio-python.git
+wsgiref==0.1.2

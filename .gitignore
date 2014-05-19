@@ -1,0 +1,17 @@
+# Ignore system files
+.DS_Store
+
+# Ignore editor files
+*.swp
+*.swo
+
+# Ignore compiled code
+*.pyc
+
+# Ignore local configuration
+*.db
+*.db-journal
+settings_local.py
+
+# Ignore generated staticfiles
+staticfiles
