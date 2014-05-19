@@ -1,7 +1,12 @@
+import codecs
+import locale
 import sys
+
 
 from rdioapi import Rdio
 from settings_local import RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET
+
+sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout) 
 
 def uprint(msg):
     """
