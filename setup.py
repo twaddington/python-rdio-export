@@ -9,12 +9,8 @@ except ImportError:
 import rdio_export
 
 requires = [
-    'Rdio',
-    'wsgiref',
-]
-
-requires_links = [
-    'https://github.com/rdio/rdio-python/archive/master.zip#egg=rdio-python-0.2',
+    'requests',
+    'requests_oauthlib',
 ]
 
 setup(
@@ -27,7 +23,6 @@ setup(
     author_email='tristan.waddington@gmail.com',
     url='https://github.com/twaddington/python-rdio-export',
     install_requires=requires,
-    dependency_links=requires_links,
     packages=['rdio_export'],
     scripts=['bin/rdio-export'],
     zip_safe=False,

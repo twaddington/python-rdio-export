@@ -1,4 +1,5 @@
-from rdioapi import Rdio
+import requests
+from requests_oauthlib import OAuth1
 
 RDIO_U_EXTRAS = ','.join((
     'username',
@@ -21,18 +22,32 @@ class RdioExporter():
     def __init__(self, key, secret):
         self.key = key
         self.secret = secret
+        self.auth = OAuth1(key, secret)
 
-        # Initialize our client
-        self.rdio = Rdio(key, secret, {})
+    def _call(self, group, method, **kwargs):
+        data = {'method': method}
+        
+        # Apply the provided keyword arguments to our data payload
+        data.update(kwargs)
+
+        # Make the request
+        resp = requests.post('http://api.rdio.com/1/%s' % group,
+                auth=self.auth, data=data).json()
+
+        # Check for an error
+        if resp.get('status') != 'ok':
+            raise RuntimeError(resp.get('message'))
+
+        return resp.get('result')
 
     def get_user(self, email=None, username=None, extras=RDIO_U_EXTRAS):
         """
         Returns the given user as a dict or None
         """
         if email:
-            return self.rdio.call('findUser', email=email, extras=extras)
+            return self._call('social', 'findUser', email=email, extras=extras)
         if username:
-            return self.rdio.call('findUser', vanityName=username, extras=extras)
+            return self._call('social', 'findUser', vanityName=username, extras=extras)
 
     def get_collection(self, user):
         """
@@ -60,7 +75,7 @@ class RdioExporter():
         # Continue fetching in batches until the last response is smaller
         # than the page size (count).
         while (resp_size == count):
-            collection = self.rdio.call('getAlbumsInCollection',
+            collection = self._call('collection', 'getAlbumsInCollection',
                     user=user.get('key'), sort=sort, start=start, count=count, extras=extras)
 
             # Update the size of the last response
