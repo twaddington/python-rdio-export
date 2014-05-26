@@ -1,0 +1,98 @@
+#!/usr/bin/python
+
+import os
+import sys
+import codecs
+import locale
+import argparse
+
+from rdio_export import __version__
+from rdio_export.exporter import RdioExporter
+
+# Wrap stdout with the preferred encoding to properly pipe unicode
+sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout) 
+
+def uprint(msg, newline=True, quiet=False):
+    """
+    Unbuffered print.
+    """
+    if not quiet:
+        sys.stdout.write("%s%s" % (msg, "\n" if newline else ''))
+        sys.stdout.flush()
+
+def main():
+    # Create our parser
+    parser = argparse.ArgumentParser(prog='rdio-export',
+            description='Export an Rdio collection')
+
+    # Set up our command-line arguments
+    parser.add_argument('-k', '--key',
+            help='your Rdio consumer key')
+    parser.add_argument('-s', '--secret',
+            help='your Rdio consumer secret')
+    parser.add_argument('-e', '--email',
+            help='the email of the Rdio user to fetch')
+    parser.add_argument('-u', '--username',
+            help='the username of the Rdio user to fetch')
+    parser.add_argument('--quiet', action='store_true',
+            help='suppress all output except errors')
+    parser.add_argument('--version', action='version',
+            version='%(prog)s {v}'.format(v=__version__))
+
+    # Get our arguments
+    args = parser.parse_args()
+
+    # Set the global quiet setting
+    global quiet
+    quiet = args.quiet
+
+    # Load authentication from env
+    rdio_consumer_key = os.environ.get('RDIO_CONSUMER_KEY')
+    rdio_consumer_secret = os.environ.get('RDIO_CONSUMER_SECRET')
+
+    # Load authentication from the command-line
+    if args.key:
+        rdio_consumer_key = args.key
+    if args.secret:
+        rdio_consumer_secret = args.secret
+
+    # Throw an error if authentication is missing
+    if not all((rdio_consumer_key, rdio_consumer_secret)):
+        parser.error('Missing required consumer key or secret!')
+
+    # Create our exporter
+    exporter = RdioExporter(key=rdio_consumer_key, secret=rdio_consumer_secret)
+
+    # Find our user
+    if args.email:
+        user = exporter.get_user(email=args.email)
+        if not user:
+            parser.error('User not found with email %s' % args.email)
+    elif args.username:
+        user = exporter.get_user(username=args.username)
+        if not user:
+            parser.error('User not found with username %s' % args.username)
+    else:
+        parser.error('User not found, --email or --username required')
+
+    uprint('Fetching collection for %s' % user.get('username'))
+
+    # Iterate over the user's collection, grouped by artist
+    last_artist = None
+    for t in exporter.collection(user):
+        artist = t.get('artist')
+
+        # Group by artist
+        if artist != last_artist:
+            uprint("\n## %s" % artist)
+
+            # Update the last artist
+            last_artist = artist
+
+        uprint('- %s' % t.get('name'))
+
+if __name__ == '__main__':
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        sys.exit()
