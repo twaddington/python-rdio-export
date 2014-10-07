@@ -21,6 +21,27 @@ Installing
 
     $ pip install python-rdio-export
 
+You can (optionally) provide your Rdio credentials via a global config
+file located in `~/.rdioconfig` with the format:
+
+::
+
+    [Rdio]
+    rdioConsumerKey=your_api_key
+    rdioConsumerSecret=your_api_secret
+
+Alternatively, you can provide your Rdio credentials via two environment
+variables:
+
+::
+
+    $ export RDIO_CONSUMER_KEY=your_api_key
+    $ export RDIO_CONSUMER_SECRET=your_api_secret
+
+> Note: These environment variables will only be consumed by the rdio-export
+> script and can be overridden through the use of the script flags
+> :code:`--key` and :code:`--secret`.
+
 Examples
 --------
 
