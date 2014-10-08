@@ -102,7 +102,7 @@ def main():
             # Update the last artist
             last_artist = artist
 
-        uprint('- %s' % t.get('name'))
+        uprint('  - %s' % t.get('name'))
 
 if __name__ == '__main__':
     try:
