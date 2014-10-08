@@ -6,7 +6,7 @@ import codecs
 import locale
 import argparse
 
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoOptionError
 
 from rdio_export import __version__
 from rdio_export.exporter import RdioExporter
@@ -48,18 +48,20 @@ def main():
     global quiet
     quiet = args.quiet
 
-    # Load authentication from env
-    rdio_consumer_key = os.environ.get('RDIO_CONSUMER_KEY')
-    rdio_consumer_secret = os.environ.get('RDIO_CONSUMER_SECRET')
-
-    # Load authentication from config file
+    # Load authentication from global config
     config = ConfigParser()
     config.read(os.path.join(os.path.expanduser('~'), '.rdioconfig'))
 
-    if not rdio_consumer_key:
-        rdio_consumer_key = config.get('Rdio', 'rdioConsumerKey')
-    if not rdio_consumer_secret:
-        rdio_consumer_secret = config.get('Rdio', 'rdioConsumerSecret')
+    if config.has_section('Rdio'):
+        try:
+            rdio_consumer_key = config.get('Rdio', 'rdioConsumerKey')
+            rdio_consumer_secret = config.get('Rdio', 'rdioConsumerSecret')
+        except NoOptionError:
+            pass
+
+    # Load authentication from env
+    rdio_consumer_key = os.environ.get('RDIO_CONSUMER_KEY')
+    rdio_consumer_secret = os.environ.get('RDIO_CONSUMER_SECRET')
 
     # Load authentication from the command-line
     if args.key:
