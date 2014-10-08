@@ -38,9 +38,11 @@ variables:
     $ export RDIO_CONSUMER_KEY=your_api_key
     $ export RDIO_CONSUMER_SECRET=your_api_secret
 
-> Note: These environment variables will only be consumed by the rdio-export
-> script and can be overridden through the use of the script flags
-> :code:`--key` and :code:`--secret`.
+..
+
+    Note: These environment variables will only be consumed by the rdio-export
+    script and can be overridden through the use of the script flags
+    :code:`--key` and :code:`--secret`.
 
 Examples
 --------
