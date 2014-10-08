@@ -57,6 +57,12 @@ Export by email:
 
     $ rdio-export --email tristan.waddington@gmail.com
 
+Export to a file:
+
+::
+
+    $ rdio-export --user twaddington > rdio-backup.txt
+
 Publishing
 ----------
 
