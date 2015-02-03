@@ -18,6 +18,7 @@ setup(
     version=rdio_export.__version__,
     description='A command-line utility for exporting an Rdio collection.',
     long_description=open('README.rst').read(),
+    keywords='rdio export exporter backup cli',
     license=open('LICENSE').read(),
     author='Tristan Waddington',
     author_email='tristan.waddington@gmail.com',
