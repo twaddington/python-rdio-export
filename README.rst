@@ -68,7 +68,7 @@ file located in :code:`~/.rdioconfig` with the format:
 Examples
 --------
 
-Note that results will be printed to stdout by default.
+    Note: Results will be printed to stdout by default.
 
 Export by username:
 
