@@ -68,6 +68,10 @@ Export to a file:
 
     $ rdio-export --user twaddington > rdio-backup.txt
 
+..
+
+    Note: Output will be printed to stdout by default unless piped to a file.
+
 Bug reports
 -----------
 
