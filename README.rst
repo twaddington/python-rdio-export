@@ -68,17 +68,6 @@ Export to a file:
 
     $ rdio-export --user twaddington > rdio-backup.txt
 
-Publishing
-----------
-
-::
-
-    # Register with pypi (only done once)
-    $ python setup.py register
-
-    # Upload a new source distribution to pypi
-    $ python setup.py sdist upload
-
 Bug reports
 -----------
 
