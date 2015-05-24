@@ -120,7 +120,7 @@ def main():
 
             uprint("\n### %s" % album)
 
-            # Update the last artist
+            # Update the last album
             last_album = album
 
         if args.level == 'album':
