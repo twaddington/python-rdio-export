@@ -36,6 +36,10 @@ def main():
             help='the email of the Rdio user to fetch')
     parser.add_argument('-u', '--username',
             help='the username of the Rdio user to fetch')
+    parser.add_argument('-l', '--level',
+            choices=['album', 'artist', 'track'],
+            default='album',
+            help='level of detail with which to report collection')
     parser.add_argument('--quiet', action='store_true',
             help='suppress all output except errors')
     parser.add_argument('--version', action='version',
@@ -47,6 +51,10 @@ def main():
     # Set the global quiet setting
     global quiet
     quiet = args.quiet
+
+    # initialize rdio key and secret
+    rdio_consumer_key = None
+    rdio_consumer_secret = None
 
     # Load authentication from global config
     config = ConfigParser()
@@ -92,8 +100,10 @@ def main():
 
     # Iterate over the user's collection, grouped by artist
     last_artist = None
+    last_album = None
     for t in exporter.collection(user):
         artist = t.get('artist')
+        album = t.get('album')
 
         # Group by artist
         if artist != last_artist:
@@ -101,6 +111,20 @@ def main():
 
             # Update the last artist
             last_artist = artist
+
+        if args.level == 'artist':
+            continue
+
+        # Group by album
+        if album != last_album:
+
+            uprint("\n### %s" % album)
+
+            # Update the last artist
+            last_album = album
+
+        if args.level == 'album':
+            continue
 
         uprint('  - %s' % t.get('name'))
 
