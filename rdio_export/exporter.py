@@ -13,7 +13,6 @@ RDIO_C_EXTRAS = ','.join((
         'artist',
         'displayDate',
         'shortUrl',
-        'album',
         'albumKey',
         'artistKey',
 ))
@@ -76,7 +75,7 @@ class RdioExporter():
         # Continue fetching in batches until the last response is smaller
         # than the page size (count).
         while (resp_size == count):
-            collection = self._call('collection', 'getTracksInCollection',
+            collection = self._call('collection', 'getAlbumsInCollection',
                     user=user.get('key'), sort=sort, start=start, count=count, extras=extras)
 
             # Update the size of the last response
