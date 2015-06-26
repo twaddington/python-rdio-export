@@ -36,10 +36,6 @@ def main():
             help='the email of the Rdio user to fetch')
     parser.add_argument('-u', '--username',
             help='the username of the Rdio user to fetch')
-    parser.add_argument('-l', '--level',
-            choices=['album', 'artist', 'track'],
-            default='album',
-            help='level of detail with which to report collection')
     parser.add_argument('--quiet', action='store_true',
             help='suppress all output except errors')
     parser.add_argument('--version', action='version',
@@ -112,19 +108,13 @@ def main():
             # Update the last artist
             last_artist = artist
 
-        if args.level == 'artist':
-            continue
-
         # Group by album
         if album != last_album:
 
-            uprint("\n### %s" % album)
+            uprint("### %s" % album)
 
             # Update the last album
             last_album = album
-
-        if args.level == 'album':
-            continue
 
         uprint('  - %s' % t.get('name'))
 
