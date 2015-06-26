@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
+import argparse
+import codecs
+import csv
+import locale
 import os
 import sys
-import codecs
-import locale
-import argparse
 
 from ConfigParser import ConfigParser, NoOptionError
 
@@ -12,6 +13,7 @@ from rdio_export import __version__
 from rdio_export.exporter import RdioExporter
 
 # Wrap stdout with the preferred encoding to properly pipe unicode
+orig_stdout = sys.stdout
 sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout) 
 
 def uprint(msg, newline=True, quiet=False):
@@ -21,6 +23,53 @@ def uprint(msg, newline=True, quiet=False):
     if not quiet:
         sys.stdout.write("%s%s" % (msg, "\n" if newline else ''))
         sys.stdout.flush()
+
+def print_csv(exporter, user):
+    fieldnames = ['artist', 'album', 'track']
+    writer = csv.DictWriter(orig_stdout, fieldnames=fieldnames)
+    writer.writeheader()
+    for t in exporter.collection(user):
+        t['track'] = t.pop('name') # rename 'name' key to 'track'
+        writer.writerow({key:t[key].encode('utf-8') for key in fieldnames})
+
+def print_md(exporter, user):
+    # Iterate over the user's collection, grouped by artist
+    last_artist = None
+    last_album = None
+    for t in exporter.collection(user):
+        artist = t.get('artist')
+        album = t.get('album')
+
+        # Group by artist
+        if artist != last_artist:
+            uprint("\n## %s" % artist)
+
+            # Update the last artist
+            last_artist = artist
+
+        # Group by album
+        if album != last_album:
+
+            uprint("### %s" % album)
+
+            # Update the last album
+            last_album = album
+
+        uprint('  - %s' % t.get('name'))
+
+def get_user(exporter, email, username):
+    if email:
+        user = exporter.get_user(email=email)
+        if not user:
+            parser.error('User not found with email %s' % email)
+    elif username:
+        user = exporter.get_user(username=username)
+        if not user:
+            parser.error('User not found with username %s' % username)
+    else:
+        parser.error('User not found, --email or --username required')
+
+    return user
 
 def main():
     # Create our parser
@@ -36,6 +85,10 @@ def main():
             help='the email of the Rdio user to fetch')
     parser.add_argument('-u', '--username',
             help='the username of the Rdio user to fetch')
+    parser.add_argument('-f', '--format',
+            choices=['md', 'csv'],
+            help='output format (default is md)',
+            default='md')
     parser.add_argument('--quiet', action='store_true',
             help='suppress all output except errors')
     parser.add_argument('--version', action='version',
@@ -80,43 +133,13 @@ def main():
     # Create our exporter
     exporter = RdioExporter(key=rdio_consumer_key, secret=rdio_consumer_secret)
 
-    # Find our user
-    if args.email:
-        user = exporter.get_user(email=args.email)
-        if not user:
-            parser.error('User not found with email %s' % args.email)
-    elif args.username:
-        user = exporter.get_user(username=args.username)
-        if not user:
-            parser.error('User not found with username %s' % args.username)
-    else:
-        parser.error('User not found, --email or --username required')
-
+    user = get_user(exporter, args.email, args.username)
     uprint('Fetching collection for %s' % user.get('username'))
 
-    # Iterate over the user's collection, grouped by artist
-    last_artist = None
-    last_album = None
-    for t in exporter.collection(user):
-        artist = t.get('artist')
-        album = t.get('album')
-
-        # Group by artist
-        if artist != last_artist:
-            uprint("\n## %s" % artist)
-
-            # Update the last artist
-            last_artist = artist
-
-        # Group by album
-        if album != last_album:
-
-            uprint("### %s" % album)
-
-            # Update the last album
-            last_album = album
-
-        uprint('  - %s' % t.get('name'))
+    if args.format == 'csv':
+        print_csv(exporter, user)
+    else:
+        print_md(exporter, user)
 
 if __name__ == '__main__':
     try:
