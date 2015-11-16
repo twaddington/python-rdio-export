@@ -52,6 +52,9 @@ def main():
     config = ConfigParser()
     config.read(os.path.join(os.path.expanduser('~'), '.rdioconfig'))
 
+    rdio_client_id = ""
+    rdio_client_secret = ""
+
     if config.has_section('Rdio'):
         try:
             rdio_client_id = config.get('Rdio', 'rdioClientId')
