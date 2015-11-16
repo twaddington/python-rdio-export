@@ -7,7 +7,7 @@ RDIO_U_EXTRAS = ','.join((
     'username',
 ))
 
-RDIO_C_PER_PAGE = 50
+RDIO_C_PER_PAGE = 250
 RDIO_C_SORT_BY = 'artist'
 RDIO_C_EXTRAS = ','.join((
         '-*',
