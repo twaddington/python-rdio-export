@@ -38,15 +38,15 @@ directly:
 
 ::
     
-    $ rdio-export --user twaddington --key your_api_key --secret your_api_secret
+    $ rdio-export --user twaddington --id your_client_id --secret your_client_secret
 
 You can also (optionally) provide your Rdio credentials via two environment
 variables:
 
 ::
 
-    $ export RDIO_CONSUMER_KEY=your_api_key
-    $ export RDIO_CONSUMER_SECRET=your_api_secret
+    $ export RDIO_CLIENT_ID=your_client_id
+    $ export RDIO_CLIENT_SECRET=your_client_secret
     
 You can also (optionally) provide your Rdio credentials via a global config
 file located in :code:`~/.rdioconfig` with the format:
@@ -54,14 +54,14 @@ file located in :code:`~/.rdioconfig` with the format:
 ::
 
     [Rdio]
-    rdioConsumerKey=your_api_key
-    rdioConsumerSecret=your_api_secret
+    rdioClientId=your_client_key
+    rdioClientSecret=your_client_secret
 
 ..
 
     Note: Credentials are parsed in the order listed above. For example, the
     script will first attempt to use credentials provided via the
-    :code:`--key` and :code:`--secret` arguments. Next, credentials will be
+    :code:`--id` and :code:`--secret` arguments. Next, credentials will be
     loaded from the environment variables. Finally, the config file will be
     examined for credentials.
 

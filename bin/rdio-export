@@ -28,10 +28,10 @@ def main():
             description='Export an Rdio collection')
 
     # Set up our command-line arguments
-    parser.add_argument('-k', '--key',
-            help='your Rdio consumer key')
+    parser.add_argument('-i', '--id',
+            help='your Rdio client id')
     parser.add_argument('-s', '--secret',
-            help='your Rdio consumer secret')
+            help='your Rdio client secret')
     parser.add_argument('-e', '--email',
             help='the email of the Rdio user to fetch')
     parser.add_argument('-u', '--username',
@@ -54,27 +54,27 @@ def main():
 
     if config.has_section('Rdio'):
         try:
-            rdio_consumer_key = config.get('Rdio', 'rdioConsumerKey')
-            rdio_consumer_secret = config.get('Rdio', 'rdioConsumerSecret')
+            rdio_client_id = config.get('Rdio', 'rdioClientId')
+            rdio_client_secret = config.get('Rdio', 'rdioClientSecret')
         except NoOptionError:
             pass
 
     # Load authentication from env
-    rdio_consumer_key = os.environ.get('RDIO_CONSUMER_KEY', rdio_consumer_key)
-    rdio_consumer_secret = os.environ.get('RDIO_CONSUMER_SECRET', rdio_consumer_secret)
+    rdio_client_id = os.environ.get('RDIO_CLIENT_ID', rdio_client_id)
+    rdio_client_secret = os.environ.get('RDIO_CLIENT_SECRET', rdio_client_secret)
 
     # Load authentication from the command-line
-    if args.key:
-        rdio_consumer_key = args.key
+    if args.id:
+        rdio_client_id = args.id
     if args.secret:
-        rdio_consumer_secret = args.secret
+        rdio_client_secret = args.secret
 
     # Throw an error if authentication is missing
-    if not all((rdio_consumer_key, rdio_consumer_secret)):
-        parser.error('Missing required consumer key or secret!')
+    if not all((rdio_client_id, rdio_client_secret)):
+        parser.error('Missing required client id or secret!')
 
     # Create our exporter
-    exporter = RdioExporter(key=rdio_consumer_key, secret=rdio_consumer_secret)
+    exporter = RdioExporter(client_id=rdio_client_id, client_secret=rdio_client_secret)
 
     # Find our user
     if args.email:

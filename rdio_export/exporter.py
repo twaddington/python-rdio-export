@@ -1,5 +1,7 @@
 import requests
-from requests_oauthlib import OAuth1
+
+from oauthlib.oauth2 import BackendApplicationClient
+from requests_oauthlib import OAuth2Session
 
 RDIO_U_EXTRAS = ','.join((
     'username',
@@ -19,10 +21,10 @@ RDIO_C_EXTRAS = ','.join((
 
 
 class RdioExporter():
-    def __init__(self, key, secret):
-        self.key = key
-        self.secret = secret
-        self.auth = OAuth1(key, secret)
+    def __init__(self, client_id, client_secret):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.auth = OAuth2Session(client_id, token=client_secret)
 
     def _call(self, group, method, **kwargs):
         data = {'method': method}
@@ -30,9 +32,16 @@ class RdioExporter():
         # Apply the provided keyword arguments to our data payload
         data.update(kwargs)
 
+        # Fetch an OAuth token
+        client = BackendApplicationClient(client_id=self.client_id)
+        oauth = OAuth2Session(client=client)
+        token = oauth.fetch_token(token_url='https://services.rdio.com/oauth2/token',
+                client_id=self.client_id, client_secret=self.client_secret)
+
         # Make the request
-        resp = requests.post('http://api.rdio.com/1/%s' % group,
-                auth=self.auth, data=data).json()
+        headers = {'Authorization': 'Bearer %s' % token.get('access_token')}
+        resp = requests.post('https://services.rdio.com/api/1/%s' % group,
+                headers=headers, data=data).json()
 
         # Check for an error
         if resp.get('status') != 'ok':
