@@ -12,8 +12,10 @@ from ConfigParser import ConfigParser, NoOptionError
 from rdio_export import __version__
 from rdio_export.exporter import RdioExporter
 
+# Stash stdout
+raw_stdout = sys.stdout
+
 # Wrap stdout with the preferred encoding to properly pipe unicode
-orig_stdout = sys.stdout
 sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout) 
 
 def uprint(msg, newline=True, quiet=False):
@@ -25,12 +27,15 @@ def uprint(msg, newline=True, quiet=False):
         sys.stdout.flush()
 
 def print_csv(exporter, user):
-    fieldnames = ['artist', 'album', 'track']
-    writer = csv.DictWriter(orig_stdout, fieldnames=fieldnames)
+    fieldnames = ['artist', 'album', 'url',]
+    writer = csv.DictWriter(raw_stdout, fieldnames=fieldnames)
     writer.writeheader()
     for t in exporter.collection(user):
-        t['track'] = t.pop('name') # rename 'name' key to 'track'
-        writer.writerow({key:t[key].encode('utf-8') for key in fieldnames})
+        row = {}
+        row['artist'] = t.get('artist').encode('utf-8')
+        row['album'] = t.get('name').encode('utf-8')
+        row['url'] = t.get('shortUrl')
+        writer.writerow(row)
 
 def print_md(exporter, user):
     # Iterate over the user's collection, grouped by artist
