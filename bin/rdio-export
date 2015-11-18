@@ -73,6 +73,7 @@ def get_user(exporter, email, username):
 
 def main():
     # Create our parser
+    global parser
     parser = argparse.ArgumentParser(prog='rdio-export',
             description='Export an Rdio collection')
 
