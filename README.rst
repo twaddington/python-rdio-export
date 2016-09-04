@@ -1,9 +1,6 @@
 python-rdio-export
 ==================
 
-.. image:: https://img.shields.io/pypi/dm/python-rdio-export.svg
-    :target: https://pypi.python.org/pypi/python-rdio-export
-
 This exporter can be used to backup the collection of an Rdio user. It
 includes a command-line utility script and a library for bundling into
 your own applications. The command-line utility will output results
